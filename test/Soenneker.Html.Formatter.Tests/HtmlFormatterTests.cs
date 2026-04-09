@@ -1,5 +1,9 @@
 using Soenneker.Html.Formatter.Abstract;
 using Soenneker.Tests.FixturedUnit;
+using System;
+using System.IO;
+using System.Threading.Tasks;
+using Soenneker.Facts.Local;
 using Xunit;
 
 namespace Soenneker.Html.Formatter.Tests;
@@ -19,4 +23,11 @@ public sealed class HtmlFormatterTests : FixturedUnitTest
     {
 
     }
+
+    [LocalFact]
+    public async ValueTask PrettyPrintDirectory()
+    {
+       // _util.PrettyPrintDirectory("c:\")
+    }
+
 }

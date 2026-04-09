@@ -17,6 +17,7 @@ using AngleSharp.Html.Parser;
 using Soenneker.AngleSharp.Parser.Abstract;
 using Soenneker.AngleSharp.Parser.Enums;
 using Soenneker.Extensions.String;
+using System.Collections.Generic;
 
 namespace Soenneker.Html.Formatter;
 
@@ -36,17 +37,10 @@ public sealed class HtmlFormatter : IHtmlFormatter
         _angleSharpParser = angleSharpParser;
     }
 
-    public ValueTask<string> Format(string? html, CancellationToken cancellationToken = default) => PrettyPrint(html, cancellationToken);
-
     public ValueTask<string> PrettyPrint(string? html, CancellationToken cancellationToken = default) => Process(html, _prettyFormatter, cancellationToken);
 
     public ValueTask<string> Normalize(string? html, CancellationToken cancellationToken = default) =>
         Process(html, HtmlMarkupFormatter.Instance, cancellationToken);
-
-    public ValueTask<string> FormatFile(string filePath, bool log = true, CancellationToken cancellationToken = default)
-    {
-        return PrettyPrintFile(filePath, log, cancellationToken);
-    }
 
     public async ValueTask<string> PrettyPrintFile(string filePath, bool log = true, CancellationToken cancellationToken = default)
     {
@@ -64,11 +58,6 @@ public sealed class HtmlFormatter : IHtmlFormatter
 
         return await Normalize(html, cancellationToken)
             .NoSync();
-    }
-
-    public ValueTask SaveFormattedFile(string sourcePath, string? destinationPath = null, bool log = true, CancellationToken cancellationToken = default)
-    {
-        return SavePrettyPrintedFile(sourcePath, destinationPath, log, cancellationToken);
     }
 
     public async ValueTask SavePrettyPrintedFile(string sourcePath, string? destinationPath = null, bool log = true,
@@ -90,10 +79,27 @@ public sealed class HtmlFormatter : IHtmlFormatter
             .NoSync();
     }
 
+    public async ValueTask PrettyPrintDirectory(string directoryPath, bool recursive = false, bool log = true,
+        CancellationToken cancellationToken = default)
+    {
+        if (directoryPath.IsNullOrWhiteSpace())
+            throw new ArgumentException("Directory path must be provided.", nameof(directoryPath));
+
+        List<string> htmlFiles = await GetHtmlFiles(directoryPath, recursive, cancellationToken)
+            .NoSync();
+
+        foreach (string htmlFile in htmlFiles)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            await PrettyPrintFile(htmlFile, log: log, cancellationToken: cancellationToken)
+                .NoSync();
+        }
+    }
+
     private Task<string> ReadFile(string filePath, bool log, CancellationToken cancellationToken)
     {
-        if (filePath.IsNullOrWhiteSpace())
-            throw new ArgumentException("File path must be provided.", nameof(filePath));
+        filePath.ThrowIfNullOrWhiteSpace();
 
         return _fileUtil.Read(filePath, log, cancellationToken);
     }
@@ -102,17 +108,31 @@ public sealed class HtmlFormatter : IHtmlFormatter
     {
         string targetPath = destinationPath.IsNullOrWhiteSpace() ? sourcePath : destinationPath;
 
-        if (targetPath.IsNullOrWhiteSpace())
-            throw new ArgumentException("Destination path must be provided.", nameof(destinationPath));
+        targetPath.ThrowIfNullOrWhiteSpace();
 
         string? directory = Path.GetDirectoryName(targetPath);
 
-        if (!string.IsNullOrWhiteSpace(directory))
+        if (directory.HasContent())
             await _directoryUtil.Create(directory, log, cancellationToken)
                                 .NoSync();
 
         await _fileUtil.Write(targetPath, content, log, cancellationToken)
                        .NoSync();
+    }
+
+    private async ValueTask<List<string>> GetHtmlFiles(string directoryPath, bool recursive, CancellationToken cancellationToken)
+    {
+        List<string> htmlFiles = await _directoryUtil.GetFilesByExtension(directoryPath, ".html", recursive, cancellationToken)
+                                                     .NoSync();
+        List<string> htmFiles = await _directoryUtil.GetFilesByExtension(directoryPath, ".htm", recursive, cancellationToken)
+                                                    .NoSync();
+
+        if (htmFiles.Count == 0)
+            return htmlFiles;
+
+        htmlFiles.AddRange(htmFiles);
+
+        return htmlFiles;
     }
 
     private async ValueTask<string> Process(string? html, IMarkupFormatter formatter, CancellationToken cancellationToken)

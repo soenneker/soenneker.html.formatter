@@ -9,14 +9,6 @@ namespace Soenneker.Html.Formatter.Abstract;
 public interface IHtmlFormatter
 {
     /// <summary>
-    /// Formats the specified HTML using the default formatting behavior.
-    /// </summary>
-    /// <param name="html">The HTML content to format.</param>
-    /// <param name="cancellationToken">A cancellation token.</param>
-    /// <returns>The formatted HTML.</returns>
-    ValueTask<string> Format(string? html, CancellationToken cancellationToken = default);
-
-    /// <summary>
     /// Pretty-prints the specified HTML with indentation and readable formatting.
     /// </summary>
     /// <param name="html">The HTML content to pretty-print.</param>
@@ -31,15 +23,6 @@ public interface IHtmlFormatter
     /// <param name="cancellationToken">A cancellation token.</param>
     /// <returns>The normalized HTML.</returns>
     ValueTask<string> Normalize(string? html, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Reads HTML from the specified file and formats it using the default formatting behavior.
-    /// </summary>
-    /// <param name="filePath">The path to the HTML file.</param>
-    /// <param name="log">Whether file operations should be logged.</param>
-    /// <param name="cancellationToken">A cancellation token.</param>
-    /// <returns>The formatted HTML.</returns>
-    ValueTask<string> FormatFile(string filePath, bool log = true, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Reads HTML from the specified file and pretty-prints it.
@@ -58,18 +41,6 @@ public interface IHtmlFormatter
     /// <param name="cancellationToken">A cancellation token.</param>
     /// <returns>The normalized HTML.</returns>
     ValueTask<string> NormalizeFile(string filePath, bool log = true, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Reads HTML from the source file, formats it using the default formatting behavior, and saves the result.
-    /// </summary>
-    /// <param name="sourcePath">The source HTML file path.</param>
-    /// <param name="destinationPath">
-    /// The destination file path. When <see langword="null"/>, the source file is overwritten.
-    /// </param>
-    /// <param name="log">Whether file operations should be logged.</param>
-    /// <param name="cancellationToken">A cancellation token.</param>
-    /// <returns>A task representing the asynchronous save operation.</returns>
-    ValueTask SaveFormattedFile(string sourcePath, string? destinationPath = null, bool log = true, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Reads HTML from the source file, pretty-prints it, and saves the result.
@@ -94,4 +65,14 @@ public interface IHtmlFormatter
     /// <param name="cancellationToken">A cancellation token.</param>
     /// <returns>A task representing the asynchronous save operation.</returns>
     ValueTask SaveNormalizedFile(string sourcePath, string? destinationPath = null, bool log = true, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Formats all HTML files in the specified directory and saves the results in place.
+    /// </summary>
+    /// <param name="directoryPath">The directory that contains HTML files.</param>
+    /// <param name="recursive">Whether subdirectories should also be processed.</param>
+    /// <param name="log">Whether file operations should be logged.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <returns>A task representing the asynchronous formatting operation.</returns>
+    ValueTask PrettyPrintDirectory(string directoryPath, bool recursive = false, bool log = true, CancellationToken cancellationToken = default);
 }
