@@ -44,56 +44,45 @@ public sealed class HtmlFormatter : IHtmlFormatter
 
     public async ValueTask<string> PrettyPrintFile(string filePath, bool log = true, CancellationToken cancellationToken = default)
     {
-        string html = await ReadFile(filePath, log, cancellationToken)
-            .NoSync();
+        string html = await ReadFile(filePath, log, cancellationToken).NoSync();
 
-        return await PrettyPrint(html, cancellationToken)
-            .NoSync();
+        return await PrettyPrint(html, cancellationToken).NoSync();
     }
 
     public async ValueTask<string> NormalizeFile(string filePath, bool log = true, CancellationToken cancellationToken = default)
     {
-        string html = await ReadFile(filePath, log, cancellationToken)
-            .NoSync();
+        string html = await ReadFile(filePath, log, cancellationToken).NoSync();
 
-        return await Normalize(html, cancellationToken)
-            .NoSync();
+        return await Normalize(html, cancellationToken).NoSync();
     }
 
     public async ValueTask SavePrettyPrintedFile(string sourcePath, string? destinationPath = null, bool log = true,
         CancellationToken cancellationToken = default)
     {
-        string formatted = await PrettyPrintFile(sourcePath, log, cancellationToken)
-            .NoSync();
+        string formatted = await PrettyPrintFile(sourcePath, log, cancellationToken).NoSync();
 
-        await Save(sourcePath, destinationPath, formatted, log, cancellationToken)
-            .NoSync();
+        await Save(sourcePath, destinationPath, formatted, log, cancellationToken).NoSync();
     }
 
     public async ValueTask SaveNormalizedFile(string sourcePath, string? destinationPath = null, bool log = true, CancellationToken cancellationToken = default)
     {
-        string normalized = await NormalizeFile(sourcePath, log, cancellationToken)
-            .NoSync();
+        string normalized = await NormalizeFile(sourcePath, log, cancellationToken).NoSync();
 
-        await Save(sourcePath, destinationPath, normalized, log, cancellationToken)
-            .NoSync();
+        await Save(sourcePath, destinationPath, normalized, log, cancellationToken).NoSync();
     }
 
-    public async ValueTask PrettyPrintDirectory(string directoryPath, bool recursive = false, bool log = true,
-        CancellationToken cancellationToken = default)
+    public async ValueTask PrettyPrintDirectory(string directoryPath, bool recursive = false, bool log = true, CancellationToken cancellationToken = default)
     {
         if (directoryPath.IsNullOrWhiteSpace())
             throw new ArgumentException("Directory path must be provided.", nameof(directoryPath));
 
-        List<string> htmlFiles = await GetHtmlFiles(directoryPath, recursive, cancellationToken)
-            .NoSync();
+        List<string> htmlFiles = await GetHtmlFiles(directoryPath, recursive, cancellationToken).NoSync();
 
         foreach (string htmlFile in htmlFiles)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            await PrettyPrintFile(htmlFile, log: log, cancellationToken: cancellationToken)
-                .NoSync();
+            await PrettyPrintFile(htmlFile, log: log, cancellationToken: cancellationToken).NoSync();
         }
     }
 
@@ -113,19 +102,15 @@ public sealed class HtmlFormatter : IHtmlFormatter
         string? directory = Path.GetDirectoryName(targetPath);
 
         if (directory.HasContent())
-            await _directoryUtil.Create(directory, log, cancellationToken)
-                                .NoSync();
+            await _directoryUtil.Create(directory, log, cancellationToken).NoSync();
 
-        await _fileUtil.Write(targetPath, content, log, cancellationToken)
-                       .NoSync();
+        await _fileUtil.Write(targetPath, content, log, cancellationToken).NoSync();
     }
 
     private async ValueTask<List<string>> GetHtmlFiles(string directoryPath, bool recursive, CancellationToken cancellationToken)
     {
-        List<string> htmlFiles = await _directoryUtil.GetFilesByExtension(directoryPath, ".html", recursive, cancellationToken)
-                                                     .NoSync();
-        List<string> htmFiles = await _directoryUtil.GetFilesByExtension(directoryPath, ".htm", recursive, cancellationToken)
-                                                    .NoSync();
+        List<string> htmlFiles = await _directoryUtil.GetFilesByExtension(directoryPath, ".html", recursive, cancellationToken).NoSync();
+        List<string> htmFiles = await _directoryUtil.GetFilesByExtension(directoryPath, ".htm", recursive, cancellationToken).NoSync();
 
         if (htmFiles.Count == 0)
             return htmlFiles;
@@ -143,19 +128,15 @@ public sealed class HtmlFormatter : IHtmlFormatter
         string input = StripBom(html);
 
         return LooksLikeDocument(input)
-            ? await SerializeDocument(input, formatter, cancellationToken)
-                .NoSync()
-            : await SerializeFragment(input, formatter, cancellationToken)
-                .NoSync();
+            ? await SerializeDocument(input, formatter, cancellationToken).NoSync()
+            : await SerializeFragment(input, formatter, cancellationToken).NoSync();
     }
 
     private async ValueTask<string> SerializeDocument(string html, IMarkupFormatter formatter, CancellationToken cancellationToken)
     {
-        HtmlParser parser = await _angleSharpParser.Get(cancellationToken)
-                                                   .NoSync();
+        HtmlParser parser = await _angleSharpParser.Get(cancellationToken).NoSync();
 
-        IHtmlDocument document = await parser.ParseDocumentAsync(html, cancellationToken)
-                                             .NoSync();
+        IHtmlDocument document = await parser.ParseDocumentAsync(html, cancellationToken).NoSync();
 
         var builder = new StringBuilder(Math.Max(html.Length + 64, 256));
 
@@ -167,11 +148,9 @@ public sealed class HtmlFormatter : IHtmlFormatter
 
     private async ValueTask<string> SerializeFragment(string html, IMarkupFormatter formatter, CancellationToken cancellationToken)
     {
-        HtmlParser parser = await _angleSharpParser.Get(AngleSharpContextType.Fast, cancellationToken)
-                                                   .NoSync();
+        HtmlParser parser = await _angleSharpParser.Get(AngleSharpContextType.Fast, cancellationToken).NoSync();
 
-        IHtmlDocument document = await parser.ParseDocumentAsync("<body></body>", cancellationToken)
-                                             .NoSync();
+        IHtmlDocument document = await parser.ParseDocumentAsync("<body></body>", cancellationToken).NoSync();
         IElement context = document.Body ?? document.CreateElement("body");
         INodeList nodes = parser.ParseFragment(html, context);
 
