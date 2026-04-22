@@ -1,30 +1,29 @@
 using Soenneker.Html.Formatter.Abstract;
-using Soenneker.Tests.FixturedUnit;
+using Soenneker.Tests.HostedUnit;
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Soenneker.Facts.Local;
-using Xunit;
+using Soenneker.Tests.Attributes.Local;
 
 namespace Soenneker.Html.Formatter.Tests;
 
-[Collection("Collection")]
-public sealed class HtmlFormatterTests : FixturedUnitTest
+[ClassDataSource<Host>(Shared = SharedType.PerTestSession)]
+public sealed class HtmlFormatterTests : HostedUnitTest
 {
     private readonly IHtmlFormatter _util;
 
-    public HtmlFormatterTests(Fixture fixture, ITestOutputHelper output) : base(fixture, output)
+    public HtmlFormatterTests(Host host) : base(host)
     {
         _util = Resolve<IHtmlFormatter>(true);
     }
 
-    [Fact]
+    [Test]
     public void Default()
     {
 
     }
 
-    [LocalFact]
+    [LocalOnly]
     public async ValueTask PrettyPrintDirectory()
     {
        // _util.PrettyPrintDirectory("c:\")
