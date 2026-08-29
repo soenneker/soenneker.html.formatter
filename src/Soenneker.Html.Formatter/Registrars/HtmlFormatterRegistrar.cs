@@ -15,6 +15,8 @@ public static class HtmlFormatterRegistrar
     /// <summary>
     /// Adds <see cref="IHtmlFormatter"/> as a singleton service. <para/>
     /// </summary>
+    /// <param name="services">Service collection that receives the registration.</param>
+    /// <returns>The same service collection, so additional registrations can be chained.</returns>
     public static IServiceCollection AddHtmlFormatterAsSingleton(this IServiceCollection services)
     {
         services.AddFileUtilAsSingleton()
@@ -28,6 +30,8 @@ public static class HtmlFormatterRegistrar
     /// <summary>
     /// Adds <see cref="IHtmlFormatter"/> as a scoped service. <para/>
     /// </summary>
+    /// <param name="services">Service collection that receives the registration.</param>
+    /// <returns>The same service collection, so additional registrations can be chained.</returns>
     public static IServiceCollection AddHtmlFormatterAsScoped(this IServiceCollection services)
     {
         services.AddFileUtilAsScoped()
