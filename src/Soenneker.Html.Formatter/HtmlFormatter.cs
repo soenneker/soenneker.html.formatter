@@ -21,7 +21,6 @@ using System.Collections.Generic;
 
 namespace Soenneker.Html.Formatter;
 
-/// <inheritdoc cref="IHtmlFormatter"/>
 public sealed class HtmlFormatter : IHtmlFormatter
 {
     private static readonly PrettyMarkupFormatter _prettyFormatter = new();
@@ -82,7 +81,7 @@ public sealed class HtmlFormatter : IHtmlFormatter
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            await PrettyPrintFile(htmlFile, log: log, cancellationToken: cancellationToken).NoSync();
+            await SavePrettyPrintedFile(htmlFile, log: log, cancellationToken: cancellationToken).NoSync();
         }
     }
 

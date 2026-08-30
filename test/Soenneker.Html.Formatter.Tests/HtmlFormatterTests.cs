@@ -3,7 +3,6 @@ using Soenneker.Tests.HostedUnit;
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Soenneker.Tests.Attributes.Local;
 
 namespace Soenneker.Html.Formatter.Tests;
 
@@ -23,10 +22,28 @@ public sealed class HtmlFormatterTests : HostedUnitTest
 
     }
 
-    [LocalOnly]
-    public async ValueTask PrettyPrintDirectory()
+    [Test]
+    public async ValueTask PrettyPrintDirectory_saves_formatted_html_in_place()
     {
-       // _util.PrettyPrintDirectory("c:\")
-    }
+        string directory = Path.Combine(Path.GetTempPath(), $"html-formatter-{Guid.NewGuid():N}");
+        string file = Path.Combine(directory, "index.html");
+        const string input = "<div><span>Hello</span></div>";
 
+        Directory.CreateDirectory(directory);
+
+        try
+        {
+            await File.WriteAllTextAsync(file, input);
+            string expected = await _util.PrettyPrint(input);
+
+            await _util.PrettyPrintDirectory(directory, log: false);
+
+            string actual = await File.ReadAllTextAsync(file);
+            await Assert.That(actual).IsEqualTo(expected);
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
+    }
 }
