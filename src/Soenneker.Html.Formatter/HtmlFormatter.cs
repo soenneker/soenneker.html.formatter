@@ -21,6 +21,7 @@ using System.Collections.Generic;
 
 namespace Soenneker.Html.Formatter;
 
+/// <inheritdoc cref="IHtmlFormatter" />
 public sealed class HtmlFormatter : IHtmlFormatter
 {
     private static readonly PrettyMarkupFormatter _prettyFormatter = new();
