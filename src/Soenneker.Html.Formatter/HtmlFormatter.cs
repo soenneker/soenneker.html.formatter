@@ -143,7 +143,7 @@ public sealed class HtmlFormatter : IHtmlFormatter
         await using var writer = new StringWriter(builder, CultureInfo.InvariantCulture);
         document.ToHtml(writer, formatter);
 
-        return TrimTrailingLineEndings(builder.ToString());
+        return TrimTrailingLineEndings(builder);
     }
 
     private async ValueTask<string> SerializeFragment(string html, IMarkupFormatter formatter, CancellationToken cancellationToken)
@@ -163,7 +163,7 @@ public sealed class HtmlFormatter : IHtmlFormatter
             node.ToHtml(writer, formatter);
         }
 
-        return TrimTrailingLineEndings(builder.ToString());
+        return TrimTrailingLineEndings(builder);
     }
 
     private static bool LooksLikeDocument(string html)
@@ -177,8 +177,11 @@ public sealed class HtmlFormatter : IHtmlFormatter
         return value.Length > 0 && value[0] == '\uFEFF' ? value[1..] : value;
     }
 
-    private static string TrimTrailingLineEndings(string value)
+    private static string TrimTrailingLineEndings(StringBuilder builder)
     {
-        return value.TrimEnd('\r', '\n');
+        int length = builder.Length;
+        while (length > 0 && builder[length - 1] is '\r' or '\n')
+            length--;
+        return builder.ToString(0, length);
     }
 }
