@@ -1,3 +1,4 @@
+using Soenneker.Utils.File.Abstract;
 using Soenneker.Html.Formatter.Abstract;
 using Soenneker.Tests.HostedUnit;
 using System;
@@ -10,10 +11,13 @@ namespace Soenneker.Html.Formatter.Tests;
 [ClassDataSource<Host>(Shared = SharedType.PerTestSession)]
 public sealed class HtmlFormatterTests : HostedUnitTest
 {
+    private readonly IFileUtil _fileUtil;
+
     private readonly IHtmlFormatter _util;
 
     public HtmlFormatterTests(Host host) : base(host)
     {
+        _fileUtil = Resolve<IFileUtil>(true);
         _util = Resolve<IHtmlFormatter>(true);
     }
 
@@ -34,12 +38,12 @@ public sealed class HtmlFormatterTests : HostedUnitTest
 
         try
         {
-            await File.WriteAllTextAsync(file, input);
+            await _fileUtil.Write(file, input);
             string expected = await _util.PrettyPrint(input, cancellationToken: cancellationToken);
 
             await _util.PrettyPrintDirectory(directory, log: false, cancellationToken: cancellationToken);
 
-            string actual = await File.ReadAllTextAsync(file);
+            string actual = await _fileUtil.Read(file);
             await Assert.That(actual).IsEqualTo(expected);
         }
         finally
