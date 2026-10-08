@@ -38,12 +38,12 @@ public sealed class HtmlFormatterTests : HostedUnitTest
 
         try
         {
-            await _fileUtil.Write(file, input);
+            await _fileUtil.Write(file, input, cancellationToken: cancellationToken);
             string expected = await _util.PrettyPrint(input, cancellationToken: cancellationToken);
 
             await _util.PrettyPrintDirectory(directory, log: false, cancellationToken: cancellationToken);
 
-            string actual = await _fileUtil.Read(file);
+            string actual = await _fileUtil.Read(file, cancellationToken: cancellationToken);
             await Assert.That(actual).IsEqualTo(expected);
         }
         finally
