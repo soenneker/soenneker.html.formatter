@@ -43,11 +43,11 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Soenneker.AngleSharp.Parser" Version="11.0.126" />
+        <PackageReference Include="Soenneker.AngleSharp.Parser" Version="11.0.127" />
         <PackageReference Include="Soenneker.Utils.Directory" Version="11.0.973" />
         <PackageReference Include="Soenneker.Utils.File" Version="11.0.2333" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Soenneker.Extensions.ValueTask" Version="4.0.133" />
+        <PackageReference Include="Soenneker.Extensions.ValueTask" Version="11.0.135" />
     </ItemGroup>
 </Project>
