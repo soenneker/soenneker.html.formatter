@@ -44,8 +44,8 @@
 
     <ItemGroup>
         <PackageReference Include="Soenneker.AngleSharp.Parser" Version="11.0.128" />
-        <PackageReference Include="Soenneker.Utils.Directory" Version="11.0.973" />
-        <PackageReference Include="Soenneker.Utils.File" Version="11.0.2333" />
+        <PackageReference Include="Soenneker.Utils.Directory" Version="11.0.976" />
+        <PackageReference Include="Soenneker.Utils.File" Version="11.0.2338" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Soenneker.Extensions.ValueTask" Version="11.0.136" />
